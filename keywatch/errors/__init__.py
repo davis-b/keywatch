@@ -1,0 +1,2 @@
+class AlreadyGrabbedError(Exception):
+	pass
