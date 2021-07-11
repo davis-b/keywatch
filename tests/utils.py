@@ -1,7 +1,7 @@
 from queue import Queue, Empty
 from sys import platform
 
-from keywatch3.listener import Listener
+from keywatch.listener import Listener
 
 if platform == 'linux':
 	from Xlib import XK
