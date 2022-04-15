@@ -1,3 +1,8 @@
+"""
+This file contains tests that can be called by other files.
+It is not intended to be tested on its own.
+"""
+
 from queue import Queue
 import multiprocessing
 
