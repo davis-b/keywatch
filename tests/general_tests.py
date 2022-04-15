@@ -1,8 +1,9 @@
 from queue import Queue
 import multiprocessing
 
-from keywatch3.listener import Listener
-from keywatch3.errors import AlreadyGrabbedError
+from keywatch import errors
+AlreadyGrabbedError = errors.AlreadyGrabbedError
+from keywatch import Listener
 from utils import wait_for_input, bind, unbind, keycode_names, SafetyNet
 
 def test_single_bind(listener: Listener, queue: Queue, character: str):
