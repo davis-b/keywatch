@@ -50,7 +50,7 @@ class Keygrab(Listener):
 	
 	def _grab(self, keycode: int, modifiers: int, call_after_release: bool):
 		"""
-		NOTE: call_after_release does nothing for this implementation Keygrab.
+		NOTE: call_after_release does nothing for this implementation of Keygrab.
 		This is due to limitations with the API call itself.
 
 		While we would love to grab the key right here, we must call it from 
