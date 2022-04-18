@@ -3,7 +3,7 @@ from Xlib import X, error
 from .xlistener import XListener
 from ...errors import AlreadyGrabbedError
 
-class MButtonGrab(XListener):
+class MouseButtonGrab(XListener):
 	"""
 	Grabs mouse buttons, preventing them from being used in the rest of the OS.
 	Note: Button Release events are currently not being tracked. # TODO Fix this
