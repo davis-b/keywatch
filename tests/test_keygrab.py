@@ -1,4 +1,5 @@
 from queue import Queue
+from sys import platform
 
 from keywatch import Keygrab
 from utils import SafetyNet
@@ -13,7 +14,10 @@ def main():
 	test_single_bind(k, queue, 'b')
 	test_single_bind(k, queue, 'b')
 	test_expect_double_bind_error(Keygrab(), queue, 'a')
-	test_grab_grabbed_listener(Keygrab, 'b')
+	# Windows is producing an error during setup of the test code.
+	# It appears to be related to multiprocess.Process. 
+	if platform != 'win32':
+		test_grab_grabbed_listener(Keygrab, 'b')
 
 
 if __name__ == '__main__':
