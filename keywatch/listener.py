@@ -25,7 +25,7 @@ class Listener(ABC):
 		""" 
 		The function that is called in a new thread when this module is started.
 		Initializes anything required for a specific peripheral grabbing method.
-		Finally, begins the _input loop.
+		Finally, begins the input loop.
 		"""
 		self.living.set()
 		self.input_loop()

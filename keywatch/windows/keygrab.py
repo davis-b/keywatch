@@ -44,7 +44,7 @@ class Keygrab(Listener):
 		super()._thread_entry()
 	
 	def stop(self):
-		""" Posts message to self.thread_id telling thread to stop. """
+		""" Posts a message to self.thread_id telling the thread to stop. """
 		super().stop()
 		self._post_message(Flags.WM_DESTROY, Flags.kill_thread_flag)
 	
