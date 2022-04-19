@@ -1,1 +1,1 @@
-from keygrab import Keygrab
+from .keygrab import Keygrab
