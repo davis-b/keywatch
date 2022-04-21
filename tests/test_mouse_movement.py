@@ -1,13 +1,14 @@
 from queue import Queue
 
-from keywatch import CursorCapture
+from keywatch import MouseGrab
 
 from utils import wait_for_input, bind, unbind, keycode_names, SafetyNet
 from general_tests import test_single_bind, test_unbind_rebind, test_expect_double_bind_error, test_grab_grabbed_listener
 
 def main():
 	queue = Queue()
-	cursor = CursorCapture(lambda x, y: queue.put([x, y]))
+	cursor = MouseGrab()
+	cursor.set_movement_fn(lambda x, y: queue.put([x, y]))
 	cursor.start()
 	timeout = 5
 	print('Please move the cursor within {} seconds'.format(timeout))

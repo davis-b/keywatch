@@ -1,25 +1,25 @@
 from Xlib import X, error
 
-from .xlistener import XListener
 from ...errors import AlreadyGrabbedError
 
-class MouseButtonGrab(XListener):
+class MouseButtonGrab():
 	"""
-	Grabs mouse buttons, preventing them from being used in the rest of the OS.
+	Mix-in class that grabs mouse buttons.
 	Note: Button Release events are currently not being tracked. # TODO Fix this
 	"""
+
 	def __init__(self):
+		self._event_mask = X.ButtonReleaseMask | X.ButtonPressMask
 		super().__init__()
 		self._error_catcher = error.CatchError(error.BadCursor, error.BadAccess, error.BadValue, error.BadWindow)
 
 	def _grab(self, keycode: int, modifiers: int=0, call_after_release=False):
 		owner_events = True
-		event_mask = X.ButtonReleaseMask | X.ButtonPressMask
 		self._root.grab_button(
 			keycode,
 			modifiers,
 			owner_events,
-			event_mask,
+			self._event_mask,
 			self._grab_mode,
 			self._grab_mode,
 			0, 0,

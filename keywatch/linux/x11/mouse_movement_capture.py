@@ -2,28 +2,19 @@ from threading import Event
 from typing import Callable
 from Xlib import X
 
-from .xlistener import XListener
-from ...errors import AlreadyGrabbedError
+from ...errors import AlreadyGrabbedError, UnknownGrabError
 
 def _default_on_movement_fn(x, y):
 	print('Cursor moved to {}.'.format((x, y)), end=' ')
 	print('Change this function by calling CursorCapture.set_movement_fn() with your own function.')
 
-class CursorCapture(XListener):
-	"""
-		Tracks cursor movement.
+class CursorCapture():
+	""" Mix-in class that tracks cursor movement. """
 
-		Example usage:  
-		mouse = CursorCapture()  
-		mouse.on_movement = lambda x, y: print(x, y)  
-		mouse.start()  
-		sleep(5)  
-		mouse.stop()  
-	"""
 	def __init__(self, on_movement: Callable[[int, int], None] = _default_on_movement_fn):
+		self._event_mask = X.PointerMotionMask
 		super().__init__()
 		self.is_grabbed = Event()
-		self._event_mask = X.PointerMotionMask
 		self._on_movement = on_movement
 
 	def set_movement_fn(self, function: Callable[[int, int], None]):
@@ -65,8 +56,7 @@ class CursorCapture(XListener):
 			# 'onerror' argument is not available for this function.
 		)
 		if result != X.GrabSuccess:
-			print('Cursor grab error?')
-			raise EnvironmentError
+			raise UnknownGrabError
 
 	def _ungrab_cursor(self):
 		self._display.ungrab_pointer(X.CurrentTime)
@@ -76,12 +66,7 @@ class CursorCapture(XListener):
 	def _input(self):
 		""" Blocking function that yields mouse movement. """
 		for event in self._get_events([X.NotifyPointerRoot]):
-			yield event.event_x, event.event_y
-			#     x pos          y pos
-
-	def input_loop(self):
-		for x, y  in self._input():
-			self._on_movement(x, y)
+			self._on_movement(event.event_x, event.event_y)
 
 	@property
 	def pos(self):
