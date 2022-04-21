@@ -2,9 +2,6 @@ from queue import Queue
 
 from keywatch import MouseGrab
 
-from utils import wait_for_input, bind, unbind, keycode_names, SafetyNet
-from general_tests import test_single_bind, test_unbind_rebind, test_expect_double_bind_error, test_grab_grabbed_listener
-
 def main():
 	queue = Queue()
 	cursor = MouseGrab()
