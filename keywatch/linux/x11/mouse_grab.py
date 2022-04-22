@@ -10,10 +10,6 @@ from .mouse_button_grab import MouseButtonGrab
 from .mouse_movement_capture import CursorCapture
 from ...errors import AlreadyGrabbedError
 
-def _default_on_movement_fn(x, y):
-	print('Cursor moved to {}.'.format((x, y)), end=' ')
-	print('Change this function by calling CursorCapture.set_movement_fn() with your own function.')
-
 class MouseGrab(MouseButtonGrab, CursorCapture, XListener):
 	"""
 	Grabs cursor movement and mouse button presses, preventing them from being used in the rest of the OS.
@@ -35,13 +31,17 @@ class MouseGrab(MouseButtonGrab, CursorCapture, XListener):
 	def _input(self):
 		"""
 		Blocking function that processes raw mouse events.
-		Yields mouse button events, calls self._on_movement(x, y) for cursor movement events.
-		# TODO should we also include a movement delta? Revisit this when we work out a solution for windows.
+		Yields mouse button events, calls self._on_movement(xy, delta) for cursor movement events.
 		"""
 		for event in self._get_events((X.ButtonPress, X.ButtonRelease, X.NotifyPointerRoot)):
 			if event.type == X.NotifyPointerRoot:
-				self._on_movement(event.event_x, event.event_y)
-				#     x pos          y pos
+				xy = (event.root_x, event.root_y)
+				delta = self._stick_cursor(xy)
+				# self._stick_cursor generates movement events by warping the pointer back to its starting location,
+				# therefore the movement delta is (0, 0).
+				# We should and do ignore those events.
+				if (delta[0] == delta[1] and delta[0] == 0): continue
+				self._on_movement(tuple(self._would_be_pos), delta)
 			else:
 				yield event.detail, event.state, event.type == X.ButtonRelease
 				#     keycode       modifiers    is_keyup

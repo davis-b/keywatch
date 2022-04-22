@@ -1,11 +1,13 @@
 from threading import Event
 from typing import Callable
+
 from Xlib import X
+from Xlib.ext.xtest import fake_input
 
 from ...errors import AlreadyGrabbedError, UnknownGrabError
 
-def _default_on_movement_fn(x, y):
-	print('Cursor moved to {}.'.format((x, y)), end=' ')
+def _default_on_movement_fn(pos, delta):
+	print('Cursor moved by {}.'.format((delta)), end=' ')
 	print('Change this function by calling CursorCapture.set_movement_fn() with your own function.')
 
 class CursorCapture():
@@ -16,6 +18,8 @@ class CursorCapture():
 		super().__init__()
 		self.is_grabbed = Event()
 		self._on_movement = on_movement
+		self._start_pos = (0, 0)
+		self._would_be_pos = [0, 0]
 
 	def set_movement_fn(self, function: Callable[[int, int], None]):
 		"""
@@ -57,6 +61,8 @@ class CursorCapture():
 		)
 		if result != X.GrabSuccess:
 			raise UnknownGrabError
+		self._start_pos = self.pos
+		self._would_be_pos = list(self._start_pos)
 
 	def _ungrab_cursor(self):
 		self._display.ungrab_pointer(X.CurrentTime)
@@ -66,7 +72,28 @@ class CursorCapture():
 	def _input(self):
 		""" Blocking function that yields mouse movement. """
 		for event in self._get_events([X.NotifyPointerRoot]):
-			self._on_movement(event.event_x, event.event_y)
+			xy = (event.root_x, event.root_y)
+			delta = self._stick_cursor(xy)
+			self._on_movement(tuple(self._would_be_pos), delta)
+	
+	def _stick_cursor(self, xy):
+		"""
+		Takes a new location that the cursor has moved to.  
+		Warps the cursor back to its starting location.  
+		Returns the movement delta from its starting location.  
+		A cursor's starting location is set when it is grabbed.  
+		"""
+		# Linux uses (0,0) as the top left of the monitor.
+		# Therefore, we determine our movement delta by reducing
+		# our new position by our start position.
+		x = xy[0] - self._start_pos[0]
+		y = xy[1] - self._start_pos[1]
+		self._would_be_pos[0] += x
+		self._would_be_pos[1] += y
+		if (x != 0 and y != 0):
+			fake_input(self._display, X.MotionNotify, x=self._start_pos[0], y=self._start_pos[1])
+			self._display.flush()
+		return x, y
 
 	@property
 	def pos(self):
