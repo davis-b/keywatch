@@ -36,7 +36,7 @@ class Listener(ABC):
 		Waits for input info that matches a bound keystate we have, and
 		then runs the associated function.	
 		"""
-		for func in self._wait_for_functions():
+		for func in self._process_input():
 			func()
 
 	@abstractmethod
@@ -80,7 +80,7 @@ class Listener(ABC):
 	def _input(self):
 		""" Generator that yields peripheral input information for any grabbed keys/buttons. """
 
-	def _wait_for_functions(self):
+	def _process_input(self):
 		""" Blocking process that receives grabbed key/button information
 		and yields the functions bound to those key combinations. """
 		for input_info in self._input():
