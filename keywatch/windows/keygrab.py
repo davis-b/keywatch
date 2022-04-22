@@ -19,7 +19,7 @@ class Flags:
 	grab_flag = 123
 	ungrab_flag = 124
 
-class Keygrab(Listener):
+class KeyGrab(Listener):
 	""" Grabs specific keys using user32.RegisterHotkey. """
 	def __init__(self):
 		super().__init__()
@@ -44,13 +44,13 @@ class Keygrab(Listener):
 		super()._thread_entry()
 	
 	def stop(self):
-		""" Posts message to self.thread_id telling thread to stop. """
+		""" Posts a message to self.thread_id telling the thread to stop. """
 		super().stop()
 		self._post_message(Flags.WM_DESTROY, Flags.kill_thread_flag)
 	
 	def _grab(self, keycode: int, modifiers: int, call_after_release: bool):
 		"""
-		NOTE: call_after_release does nothing for this implementation Keygrab.
+		NOTE: call_after_release does nothing for this implementation of KeyGrab.
 		This is due to limitations with the API call itself.
 
 		While we would love to grab the key right here, we must call it from 

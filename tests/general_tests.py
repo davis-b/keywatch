@@ -1,8 +1,14 @@
+"""
+This file contains tests that can be called by other files.
+It is not intended to be tested on its own.
+"""
+
 from queue import Queue
 import multiprocessing
 
-from keywatch.listener import Listener
-from keywatch.errors import AlreadyGrabbedError
+from keywatch import errors
+AlreadyGrabbedError = errors.AlreadyGrabbedError
+from keywatch import Listener
 from utils import wait_for_input, bind, unbind, keycode_names, SafetyNet
 
 def test_single_bind(listener: Listener, queue: Queue, character: str):

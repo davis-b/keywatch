@@ -6,3 +6,5 @@ elif platform == 'win32':
 	from .windows import *
 else:
 	raise NotImplementedError('{} is not a supported platform.'.format(platform))
+
+from .listener import Listener

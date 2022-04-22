@@ -3,7 +3,7 @@ from Xlib import X, error
 from .xlistener import XListener
 from ...errors import AlreadyGrabbedError
 
-class Keygrab(XListener):
+class KeyGrab(XListener):
 	"""
 	Uses XGrabKey to grab keys.
 	The 'transparent' parameter determines whether or not
