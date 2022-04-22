@@ -83,7 +83,6 @@ class Listener(ABC):
 	def _wait_for_functions(self):
 		""" Blocking process that receives grabbed key/button information
 		and yields the functions bound to those key combinations. """
-		# for input_info in self._input():
 		for input_info in self._input():
 			if not self.living.is_set():
 				break
