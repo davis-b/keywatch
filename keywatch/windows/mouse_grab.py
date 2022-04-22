@@ -31,6 +31,11 @@ class Buttons:
 	mousewheel_right = 7
 
 
+class Cursor_POINT(ctypes.Structure):
+    _fields_ = [("x", ctypes.c_ulong),
+                ("y", ctypes.c_ulong)]
+				
+
 dwExtraInfo = ULONG()
 class HookStruct(ctypes.Structure):
 	_fields_ = [
@@ -57,8 +62,8 @@ _keycode_transformations = {
 }
 
 
-def _default_on_movement_fn(x, y):
-	print('Cursor moved to {}.'.format((x, y)), end=' ')
+def _default_on_movement_fn(pos, delta):
+	print('Cursor moved to {}.'.format((pos, delta)), end=' ')
 	print('Change this function by calling self.set_movement_fn() with your own function.')
 
 class MouseGrab(WinHook, Listener):
@@ -72,9 +77,13 @@ class MouseGrab(WinHook, Listener):
 		self._mousewheel_deltas = { 'up': 0, 'down': 0, 'left': 0, 'right': 0 }
 		self._mousewheel_activation_point = 120
 		self._events = Queue()
+		self._start_pos = (0, 0)
+		self._would_be_pos = [0, 0]
 
 	def start(self, *args, **kwargs):
 		self.init_hook(WH_MOUSE_LL)
+		self._start_pos = self.pos
+		self._would_be_pos = list(self._start_pos)
 		super().start(*args, **kwargs)
 	
 	def stop(self):
@@ -94,12 +103,19 @@ class MouseGrab(WinHook, Listener):
 		"""
 		Callback of our hook from the Windows kernel.  
 		Places mouse button events into our '_events' queue.  
-		For mouse movement events, this function calls 'self._on_movement(x, y)'.
+		For mouse movement events, this function calls 'self._on_movement(pos, delta)'.
 		"""
 		event = HookStruct.from_address(struct_pointer)
 		wheel_vertical = button == WM_MOUSEWHEEL
 		if button == WM_MOUSEMOVE:
-			self._on_movement(event.pt.x, event.pt.y)
+			xy = event.pt.x, event.pt.y
+			# Windows uses (0,0) as the top left of the monitor.
+			# Therefore, we determine our movement delta by reducing
+			# our new position by our start position.
+			delta = (xy[0] - self._start_pos[0], xy[1] - self._start_pos[1])
+			self._would_be_pos[0] += delta[0]
+			self._would_be_pos[1] += delta[1]
+			self._on_movement(tuple(self._would_be_pos), delta)
 		elif wheel_vertical or button == WM_MOUSEHWHEEL:
 			# TODO Ensure the following two lines work correctly with mice that
 			# provide partial wheel increments.
@@ -134,3 +150,11 @@ class MouseGrab(WinHook, Listener):
 		while self._mousewheel_deltas[direction] > self._mousewheel_activation_point:
 			self._mousewheel_deltas[direction] -= self._mousewheel_activation_point
 			yield True
+
+	@property
+	def pos(self):
+		"""Returns current cursor position. Accepts no arguments.  """
+		cursor = Cursor_POINT()
+		ctypes.windll.user32.GetCursorPos(ctypes.byref(cursor))
+		return (int(cursor.x), int(cursor.y))
+	
