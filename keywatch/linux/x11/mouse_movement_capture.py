@@ -32,8 +32,7 @@ class CursorCapture():
 
 	def start(self, *args, **kwargs):
 		"""
-		Grabs the cursor, and then starts
-		listening to the cursor on a new thread.
+		Grabs the cursor.
 		Raises an error if the grab did not succeed.
 		"""
 		if not self.is_grabbed.is_set() and not self.living.is_set():
