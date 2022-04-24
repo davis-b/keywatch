@@ -8,6 +8,8 @@ k32 = ctypes.windll.kernel32
 
 from ..listener import Listener
 
+# from windows_messages import WinMessager
+#TODO : Use windows_messages.WinMessager
 
 class Flags:
 	WM_HOTKEY = 786
