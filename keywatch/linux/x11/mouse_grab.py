@@ -28,6 +28,10 @@ class MouseGrab(MouseButtonGrab, CursorCapture, XListener):
 		super().__init__()
 		self._event_mask = X.PointerMotionMask | X.ButtonPressMask | X.ButtonReleaseMask
 
+	def _stop(self):
+		self._ungrab_cursor()
+		super()._stop()
+
 	def _input(self):
 		"""
 		Blocking function that processes raw mouse events.
