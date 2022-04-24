@@ -91,14 +91,14 @@ class CursorCapture():
 		# Linux uses (0,0) as the top left of the monitor.
 		# Therefore, we determine our movement delta by reducing
 		# our new position by our start position.
-		x = xy[0] - self._start_pos[0]
-		y = xy[1] - self._start_pos[1]
-		self._would_be_pos[0] += x
-		self._would_be_pos[1] += y
-		if (x != 0 and y != 0):
+		delta_x = xy[0] - self._start_pos[0]
+		delta_y = xy[1] - self._start_pos[1]
+		self._would_be_pos[0] += delta_x
+		self._would_be_pos[1] += delta_y
+		if (delta_x != 0 or delta_y != 0):
 			fake_input(self._display, X.MotionNotify, x=self._start_pos[0], y=self._start_pos[1])
 			self._display.flush()
-		return x, y
+		return delta_x, delta_y
 
 	@property
 	def pos(self):
