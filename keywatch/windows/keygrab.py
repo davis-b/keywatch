@@ -43,9 +43,9 @@ class KeyGrab(Listener):
 		peek_message()
 		super()._thread_entry()
 	
-	def stop(self):
+	def _stop(self):
 		""" Posts a message to self.thread_id telling the thread to stop. """
-		super().stop()
+		super()._stop()
 		self._post_message(Flags.WM_DESTROY, Flags.kill_thread_flag)
 	
 	def _grab(self, keycode: int, modifiers: int, call_after_release: bool):

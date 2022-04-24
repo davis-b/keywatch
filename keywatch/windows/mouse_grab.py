@@ -86,9 +86,9 @@ class MouseGrab(WinHook, Listener):
 		self._would_be_pos = list(self._start_pos)
 		super().start(*args, **kwargs)
 	
-	def stop(self):
+	def _stop(self):
 		self.deinit_hook()
-		super().stop()
+		super()._stop()
 
 	def _input(self):
 		""" Yields mouse button events. """

@@ -58,10 +58,10 @@ class KeyboardGrab(XListener):
 		self.is_grabbed.clear()
 		self._next_event()
 	
-	def stop(self):
+	def _stop(self):
 		"""
 		Exits and cleans up the Listener.
 		This is the only function needed to safely stop the Listener.
 		"""
-		super().stop()
+		super()._stop()
 		self._ungrab_keyboard()

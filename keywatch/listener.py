@@ -38,10 +38,15 @@ class Listener(ABC):
 		"""
 		for func in self._process_input():
 			func()
-
-	@abstractmethod
+	
 	def stop(self):
 		""" Stop listening to the peripheral. Can be started again after stopping. """
+		self._stop()
+		self.thread.join()
+
+	@abstractmethod
+	def _stop(self):
+		""" Internal stop function. """
 		self.unbind_all()
 		if not self.living.is_set():
 			raise Exception('Tried to stop a Listener that is not living.')

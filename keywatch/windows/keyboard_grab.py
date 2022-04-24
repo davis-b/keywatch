@@ -94,12 +94,12 @@ class KeyboardGrab(WinHook, Listener):
 		try:
 			super().start(*args, **kwargs)
 		except Exception as e:
-			self.stop()
+			self._stop()
 			raise e
 
-	def stop(self):
+	def _stop(self):
 		self.deinit_hook()
-		super().stop()
+		super()._stop()
 		self.current_modifiers = 0
 		
 	def _input(self):

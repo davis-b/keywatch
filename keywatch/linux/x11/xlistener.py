@@ -40,8 +40,8 @@ class XListener(Listener):
 		super()._thread_entry()	
 		self._reset_window_attributes()
 	
-	def stop(self):
-		super().stop()
+	def _stop(self):
+		super()._stop()
 		self._next_event()
 	
 	def _get_events(self, type_filter):
