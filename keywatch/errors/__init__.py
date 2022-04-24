@@ -3,3 +3,6 @@ class AlreadyGrabbedError(Exception):
 
 class UnknownGrabError(Exception):
 	pass
+
+class GenericGrabError(Exception):
+	pass

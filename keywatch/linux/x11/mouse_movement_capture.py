@@ -4,7 +4,7 @@ from typing import Callable
 from Xlib import X
 from Xlib.ext.xtest import fake_input
 
-from ...errors import AlreadyGrabbedError, UnknownGrabError
+from ...errors import AlreadyGrabbedError, UnknownGrabError, GenericGrabError
 
 def _default_on_movement_fn(pos, delta):
 	print('Cursor moved by {}.'.format((delta)), end=' ')
@@ -60,6 +60,12 @@ class CursorCapture():
 			# 'onerror' argument is not available for this function.
 		)
 		if result != X.GrabSuccess:
+			if result == X.GrabNotViewable:
+				raise GenericGrabError('Cursor (movement) grab not viewable. confine_to window lies outside the boundaries of the root window.')
+			if result == X.GrabFrozen:
+				raise GenericGrabError('Cursor (movement) grab frozen. Pointer is frozen by an active grab of another client.')
+			if result == X.AlreadyGrabbed:
+				raise AlreadyGrabbedError('Cursor (movement) grab failed. Cursor was already grabbed.')
 			raise UnknownGrabError
 		self._start_pos = self.pos
 		self._would_be_pos = list(self._start_pos)
