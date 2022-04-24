@@ -101,6 +101,8 @@ class KeyboardGrab(WinHook, Listener):
 		self.deinit_hook()
 		super()._stop()
 		self.current_modifiers = 0
+		# Flush the queue so that the _input thread can exit.
+		self._events.put(None)
 		
 	def _input(self):
 		while self.living.is_set():

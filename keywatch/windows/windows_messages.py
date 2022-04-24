@@ -27,7 +27,6 @@ class WinMessager(ABC):
 			raise Exception('Windows thread was not created properly. Error #', k32.GetLastError())
 
 	def stop_windows_thread(self):
-		self._windows_thread_alive.clear()
 		self._post_message(Flags.WM_DESTROY, Flags.kill_thread_flag)
 	
 	@abstractmethod
@@ -35,8 +34,12 @@ class WinMessager(ABC):
 		self._thread_id = k32.GetCurrentThreadId()
 		msg = ctypes.wintypes.MSG()
 		self._windows_thread_alive.set()
-		while self._windows_thread_alive.is_set():
+		while True:
 			get_msg = u32.GetMessageW(ctypes.byref(msg), None, 0, 0)
+			if get_msg:
+				if msg.message == Flags.WM_DESTROY and msg.wParam == Flags.kill_thread_flag:
+					self._windows_thread_alive.clear()
+					break
 			yield get_msg, msg
 
 	def _post_message(self, msg, wparam, lparam=0):

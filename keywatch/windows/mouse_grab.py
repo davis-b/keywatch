@@ -89,6 +89,8 @@ class MouseGrab(WinHook, Listener):
 	def _stop(self):
 		self.deinit_hook()
 		super()._stop()
+		# Flush the queue so that the _input thread can exit.
+		self._events.put(None)
 
 	def _input(self):
 		""" Yields mouse button events. """
