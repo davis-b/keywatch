@@ -15,6 +15,7 @@ class WinMessager(ABC):
 	"""
 	def __init__(self):
 		self._windows_thread_alive = Event()
+		self._windows_thread_dead = Event()
 		self._thread_id: Optional[int] = None
 		super().__init__()
 
@@ -28,6 +29,7 @@ class WinMessager(ABC):
 
 	def stop_windows_thread(self):
 		self._post_message(Flags.WM_DESTROY, Flags.kill_thread_flag)
+		self._windows_thread_dead.wait(5)
 	
 	@abstractmethod
 	def _windows_thread(self):
@@ -38,9 +40,10 @@ class WinMessager(ABC):
 			get_msg = u32.GetMessageW(ctypes.byref(msg), None, 0, 0)
 			if get_msg:
 				if msg.message == Flags.WM_DESTROY and msg.wParam == Flags.kill_thread_flag:
-					self._windows_thread_alive.clear()
 					break
 			yield get_msg, msg
+		self._windows_thread_alive.clear()
+		self._windows_thread_dead.set()
 
 	def _post_message(self, msg, wparam, lparam=0):
 		""" Sends a custom message to our Windows thread. """
